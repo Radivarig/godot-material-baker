@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MaterialBakerCategoryConfig" format=3 uid="uid://hb0ygdfqbyyq"]
+
+[ext_resource type="Shader" uid="uid://gtdd13vwxrkt" path="res://addons/material_baker/shaders/albedo_height_packer.tres" id="1_diabq"]
+[ext_resource type="Script" uid="uid://b08dx6jlyfris" path="res://addons/material_baker/scripts/material_baker_category_config.gd" id="3_okv8c"]
+
+[resource]
+script = ExtResource("3_okv8c")
+baker_category_label = "Albedo & Height"
+default_shader = ExtResource("1_diabq")
+baker_category_uid = "albedo_height"

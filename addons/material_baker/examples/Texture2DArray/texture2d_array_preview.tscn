@@ -1,0 +1,498 @@
+[gd_scene format=3 uid="uid://byn8k54o6gtkh"]
+
+[ext_resource type="Script" uid="uid://cncimc2y2oqdv" path="res://addons/material_baker/examples/Texture2DArray/texture2d_array_preview.gd" id="1_rv1e0"]
+[ext_resource type="Shader" uid="uid://eigsxu7sv736" path="res://addons/material_baker/examples/Texture2DArray/texture2d_array_preview.gdshader" id="2_c8ljk"]
+[ext_resource type="Script" uid="uid://dxo2fs2juypay" path="res://addons/material_baker/scripts/material_baker_arrays.gd" id="3_git5s"]
+[ext_resource type="Script" uid="uid://b08dx6jlyfris" path="res://addons/material_baker/scripts/material_baker_category_config.gd" id="4_ks12u"]
+[ext_resource type="Resource" uid="uid://hb0ygdfqbyyq" path="res://addons/material_baker/categories/albedo_height_category.tres" id="5_u1p3s"]
+[ext_resource type="Resource" uid="uid://drng7m02n6wao" path="res://addons/material_baker/categories/normal_roughness_category.tres" id="6_ynu1p"]
+[ext_resource type="Script" uid="uid://yic323qo2r1j" path="res://addons/material_baker/scripts/material_baker_image_settings.gd" id="7_3sx2u"]
+[ext_resource type="Script" uid="uid://didai7qq4y6di" path="res://addons/material_baker/scripts/material_baker.gd" id="8_qt4bu"]
+[ext_resource type="Script" uid="uid://blbib8n3cfwq7" path="res://addons/material_baker/scripts/material_baker_category_state.gd" id="9_6u3vb"]
+[ext_resource type="Shader" uid="uid://gtdd13vwxrkt" path="res://addons/material_baker/shaders/albedo_height_packer.tres" id="10_yot2n"]
+[ext_resource type="Shader" uid="uid://ds8s67djac0c2" path="res://addons/material_baker/shaders/normal_roughness_packer.tres" id="12_ks10v"]
+[ext_resource type="Script" uid="uid://cw4ljfu2po8hb" path="res://addons/material_baker/scripts/shader_to_png.gd" id="19_xiv3c"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_m7xa2"]
+
+[sub_resource type="Sky" id="Sky_nmc0d"]
+sky_material = SubResource("ProceduralSkyMaterial_m7xa2")
+
+[sub_resource type="Environment" id="Environment_ebrne"]
+background_mode = 2
+sky = SubResource("Sky_nmc0d")
+
+[sub_resource type="QuadMesh" id="QuadMesh_kh6u7"]
+subdivide_width = 64
+subdivide_depth = 64
+
+[sub_resource type="MultiMesh" id="MultiMesh_dv1rp"]
+transform_format = 1
+use_custom_data = true
+instance_count = 4
+mesh = SubResource("QuadMesh_kh6u7")
+buffer = PackedFloat32Array(1, 0, 0, 0.5, 0, -4.371139e-08, 1, 0, 0, -1, -4.371139e-08, 0.5, 0, 0, 0, 0, 1, 0, 0, 1.6, 0, -4.371139e-08, 1, 0, 0, -1, -4.371139e-08, 0.5, 1, 0, 0, 0, 1, 0, 0, 0.5, 0, -4.371139e-08, 1, 0, 0, -1, -4.371139e-08, 1.6, 2, 0, 0, 0, 1, 0, 0, 1.6, 0, -4.371139e-08, 1, 0, 0, -1, -4.371139e-08, 1.6, 3, 0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pn3ro"]
+render_priority = 0
+shader = ExtResource("2_c8ljk")
+shader_parameter/height_scale = 0.1
+
+[sub_resource type="Resource" id="Resource_8orn7"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Resource" id="Resource_qp3d4"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Resource" id="Resource_fjsn7"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Gradient" id="Gradient_xjnf3"]
+colors = PackedColorArray(0.5264, 0.6, 0.40800002, 1, 0.61392003, 0.72, 0.5328, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_74kxt"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_hv2i7"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_74kxt")
+color_ramp = SubResource("Gradient_xjnf3")
+
+[sub_resource type="Gradient" id="Gradient_f0ugg"]
+colors = PackedColorArray(0.75398386, 0.75398386, 0.75398374, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jxoiu"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rv1e0"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_jxoiu")
+color_ramp = SubResource("Gradient_f0ugg")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c8ljk"]
+shader = ExtResource("10_yot2n")
+shader_parameter/albedo = SubResource("NoiseTexture2D_hv2i7")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/height = SubResource("NoiseTexture2D_rv1e0")
+shader_parameter/height_channel = 0
+shader_parameter/height_offset = 0.0
+
+[sub_resource type="Resource" id="Resource_git5s"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_c8ljk")
+shader = ExtResource("10_yot2n")
+
+[sub_resource type="Gradient" id="Gradient_ks12u"]
+colors = PackedColorArray(0.728822, 0.728822, 0.728822, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_u1p3s"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ynu1p"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_u1p3s")
+color_ramp = SubResource("Gradient_ks12u")
+as_normal_map = true
+bump_strength = 13.2
+
+[sub_resource type="Gradient" id="Gradient_3sx2u"]
+colors = PackedColorArray(0.5264, 0.6, 0.40800002, 1, 0.61392003, 0.72, 0.5328, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qt4bu"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_u1p3s")
+color_ramp = SubResource("Gradient_3sx2u")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6u3vb"]
+shader = ExtResource("12_ks10v")
+shader_parameter/normal = SubResource("NoiseTexture2D_ynu1p")
+shader_parameter/normal_strength = 1.0
+shader_parameter/roughness = SubResource("NoiseTexture2D_qt4bu")
+shader_parameter/roughness_channel = 0
+shader_parameter/roughness_strength = 1.0
+
+[sub_resource type="Resource" id="Resource_yot2n"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_6u3vb")
+shader = ExtResource("12_ks10v")
+
+[sub_resource type="Resource" id="Resource_n40yf"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Resource" id="Resource_06pfv"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Resource" id="Resource_tq17f"]
+script = ExtResource("7_3sx2u")
+
+[sub_resource type="Gradient" id="Gradient_e07gc"]
+offsets = PackedFloat32Array(0, 0.20601852, 0.47453704, 0.7777778)
+colors = PackedColorArray(0.5105558, 0.4134634, 0.28341797, 1, 0.3805877, 0.26558986, 0.14463449, 1, 0.32450512, 0.25089064, 0.17964095, 1, 0.26973984, 0.22236833, 0.15340737, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ks10v"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3xlad"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_ks10v")
+color_ramp = SubResource("Gradient_e07gc")
+
+[sub_resource type="Gradient" id="Gradient_n4e6m"]
+colors = PackedColorArray(0.2051174, 0.20511746, 0.20511737, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_qd82p"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5kxna"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_qd82p")
+color_ramp = SubResource("Gradient_n4e6m")
+invert = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s2nj6"]
+shader = ExtResource("10_yot2n")
+shader_parameter/albedo = SubResource("NoiseTexture2D_3xlad")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/height = SubResource("NoiseTexture2D_5kxna")
+shader_parameter/height_channel = 0
+shader_parameter/height_offset = 0.0
+
+[sub_resource type="Resource" id="Resource_l6w7x"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_s2nj6")
+shader = ExtResource("10_yot2n")
+
+[sub_resource type="Gradient" id="Gradient_xiv3c"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_cqr4x"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_hxlsu"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_cqr4x")
+color_ramp = SubResource("Gradient_xiv3c")
+as_normal_map = true
+
+[sub_resource type="Gradient" id="Gradient_a0g8k"]
+colors = PackedColorArray(0.5729883, 0.5729883, 0.5729883, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mfb28"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_cqr4x")
+color_ramp = SubResource("Gradient_a0g8k")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m8n5k"]
+shader = ExtResource("12_ks10v")
+shader_parameter/normal = SubResource("NoiseTexture2D_hxlsu")
+shader_parameter/normal_strength = 1.50000007125
+shader_parameter/roughness = SubResource("NoiseTexture2D_mfb28")
+shader_parameter/roughness_channel = 0
+shader_parameter/roughness_strength = 1.0
+
+[sub_resource type="Resource" id="Resource_6jtge"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_m8n5k")
+shader = ExtResource("12_ks10v")
+
+[sub_resource type="Gradient" id="Gradient_74kxt"]
+offsets = PackedFloat32Array(0.2037037, 1)
+colors = PackedColorArray(0.47788042, 0.47788012, 0.47787976, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hv2i7"]
+frequency = 0.0157
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_f0ugg"]
+width = 64
+height = 256
+noise = SubResource("FastNoiseLite_hv2i7")
+color_ramp = SubResource("Gradient_74kxt")
+invert = true
+
+[sub_resource type="Gradient" id="Gradient_jxoiu"]
+colors = PackedColorArray(0.2051174, 0.20511746, 0.20511737, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rv1e0"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_c8ljk"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_rv1e0")
+color_ramp = SubResource("Gradient_jxoiu")
+invert = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_git5s"]
+shader = ExtResource("10_yot2n")
+shader_parameter/albedo = SubResource("NoiseTexture2D_f0ugg")
+shader_parameter/tint = Color(0.5609549, 0.5609549, 0.5609549, 1)
+shader_parameter/height = SubResource("NoiseTexture2D_c8ljk")
+shader_parameter/height_channel = 0
+shader_parameter/height_offset = 0.0
+
+[sub_resource type="Resource" id="Resource_ks12u"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_git5s")
+shader = ExtResource("10_yot2n")
+
+[sub_resource type="Gradient" id="Gradient_u1p3s"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ynu1p"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3sx2u"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_ynu1p")
+color_ramp = SubResource("Gradient_u1p3s")
+as_normal_map = true
+
+[sub_resource type="Gradient" id="Gradient_qt4bu"]
+colors = PackedColorArray(0.5729883, 0.5729883, 0.5729883, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6u3vb"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_ynu1p")
+color_ramp = SubResource("Gradient_qt4bu")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yot2n"]
+shader = ExtResource("12_ks10v")
+shader_parameter/normal = SubResource("NoiseTexture2D_3sx2u")
+shader_parameter/normal_strength = 1.50000007125
+shader_parameter/roughness = SubResource("NoiseTexture2D_6u3vb")
+shader_parameter/roughness_channel = 0
+shader_parameter/roughness_strength = 1.0
+
+[sub_resource type="Resource" id="Resource_e07gc"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_yot2n")
+shader = ExtResource("12_ks10v")
+
+[sub_resource type="Gradient" id="Gradient_1jryn"]
+offsets = PackedFloat32Array(0, 0.19444445, 0.30787036, 0.7106481, 1)
+colors = PackedColorArray(0.4069467, 0.41583818, 0.44036433, 1, 0.47594416, 0.48505932, 0.5101757, 1, 0.5916164, 0.6011065, 0.62721246, 1, 0.7355207, 0.7365998, 0.7395684, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_g7lvl"]
+frequency = 0.0119
+fractal_octaves = 10
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_k2fmj"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_g7lvl")
+color_ramp = SubResource("Gradient_1jryn")
+invert = true
+
+[sub_resource type="Gradient" id="Gradient_x2mq3"]
+offsets = PackedFloat32Array(0, 0.37037036, 1)
+colors = PackedColorArray(0.2051174, 0.20511746, 0.20511737, 1, 0.49951836, 0.4995184, 0.49951833, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_v2neg"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8trqt"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_v2neg")
+color_ramp = SubResource("Gradient_x2mq3")
+invert = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q625j"]
+shader = ExtResource("10_yot2n")
+shader_parameter/albedo = SubResource("NoiseTexture2D_k2fmj")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/height = SubResource("NoiseTexture2D_8trqt")
+shader_parameter/height_channel = 0
+shader_parameter/height_offset = 0.0
+
+[sub_resource type="Resource" id="Resource_gg6mi"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_q625j")
+shader = ExtResource("10_yot2n")
+
+[sub_resource type="Gradient" id="Gradient_lk7ys"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wyq4n"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_arc5e"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_wyq4n")
+color_ramp = SubResource("Gradient_lk7ys")
+as_normal_map = true
+
+[sub_resource type="Gradient" id="Gradient_w14xg"]
+colors = PackedColorArray(0.5729883, 0.5729883, 0.5729883, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4i8gc"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_wyq4n")
+color_ramp = SubResource("Gradient_w14xg")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_48422"]
+shader = ExtResource("12_ks10v")
+shader_parameter/normal = SubResource("NoiseTexture2D_arc5e")
+shader_parameter/normal_strength = 2.0
+shader_parameter/roughness = SubResource("NoiseTexture2D_4i8gc")
+shader_parameter/roughness_channel = 0
+shader_parameter/roughness_strength = 0.7170000340575
+
+[sub_resource type="Resource" id="Resource_ikieb"]
+script = ExtResource("9_6u3vb")
+material = SubResource("ShaderMaterial_48422")
+shader = ExtResource("12_ks10v")
+
+[node name="Texture2DArrayPreview" type="Node3D" unique_id=651223047]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1419116417]
+environment = SubResource("Environment_ebrne")
+
+[node name="Camera3D" type="Camera3D" parent="WorldEnvironment" unique_id=539128336]
+transform = Transform3D(1, 0, 0, 0, 0.55387115, 0.8326024, 0, -0.8326024, 0.55387115, 1, 1.5, 2.3)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment" unique_id=140804701]
+transform = Transform3D(0.70710677, 0.5, -0.5, 0, 0.7071068, 0.7071068, 0.70710677, -0.5, 0.5, 0, 0, 0)
+
+[node name="Texture2DArrayPreview" type="MultiMeshInstance3D" parent="." unique_id=1686758644 node_paths=PackedStringArray("arrays_node")]
+multimesh = SubResource("MultiMesh_dv1rp")
+script = ExtResource("1_rv1e0")
+subdivision = 64
+base_material = SubResource("ShaderMaterial_pn3ro")
+arrays_node = NodePath("../MaterialBakerArrays")
+metadata/_custom_type_script = "uid://cncimc2y2oqdv"
+
+[node name="MaterialBakerArrays" type="Node" parent="." unique_id=523185625]
+script = ExtResource("3_git5s")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+image_settings = SubResource("Resource_8orn7")
+category_image_settings = Dictionary[String, ExtResource("7_3sx2u")]({
+"albedo_height": SubResource("Resource_qp3d4"),
+"normal_roughness": SubResource("Resource_fjsn7")
+})
+image_settings = SubResource("Resource_8orn7")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+metadata/_custom_type_script = "uid://dxo2fs2juypay"
+
+[node name="Grass" type="Node" parent="MaterialBakerArrays" unique_id=1339307555]
+script = ExtResource("8_qt4bu")
+array_index = 0
+category_states_dict = Dictionary[String, ExtResource("9_6u3vb")]({
+"albedo_height": SubResource("Resource_git5s"),
+"normal_roughness": SubResource("Resource_yot2n")
+})
+category_image_settings = Dictionary[String, ExtResource("7_3sx2u")]({
+"albedo_height": SubResource("Resource_n40yf"),
+"normal_roughness": SubResource("Resource_06pfv")
+})
+image_settings = SubResource("Resource_tq17f")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+generate_at_runtime = true
++albedo = SubResource("NoiseTexture2D_hv2i7")
++tint = Color(1, 1, 1, 1)
++height = SubResource("NoiseTexture2D_rv1e0")
++height_channel = 0
++height_offset = 0.0
+++normal = SubResource("NoiseTexture2D_ynu1p")
+++normal_strength = 1.0
+++roughness = SubResource("NoiseTexture2D_qt4bu")
+++roughness_channel = 0
+++roughness_strength = 1.0
+"+++Albedo & Height" = ExtResource("10_yot2n")
+"+++Normal & Roughness" = ExtResource("12_ks10v")
+metadata/_custom_type_script = "uid://didai7qq4y6di"
+
+[node name="Ground" type="Node" parent="MaterialBakerArrays" unique_id=893633905]
+script = ExtResource("8_qt4bu")
+array_index = 1
+category_states_dict = Dictionary[String, ExtResource("9_6u3vb")]({
+"albedo_height": SubResource("Resource_l6w7x"),
+"normal_roughness": SubResource("Resource_6jtge")
+})
+category_image_settings = Dictionary[String, ExtResource("7_3sx2u")]({
+"albedo_height": SubResource("Resource_n40yf"),
+"normal_roughness": SubResource("Resource_06pfv")
+})
+image_settings = SubResource("Resource_tq17f")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+generate_at_runtime = true
++albedo = SubResource("NoiseTexture2D_3xlad")
++tint = Color(1, 1, 1, 1)
++height = SubResource("NoiseTexture2D_5kxna")
++height_channel = 0
++height_offset = 0.0
+++normal = SubResource("NoiseTexture2D_hxlsu")
+++normal_strength = 1.50000007125
+++roughness = SubResource("NoiseTexture2D_mfb28")
+++roughness_channel = 0
+++roughness_strength = 1.0
+"+++Albedo & Height" = ExtResource("10_yot2n")
+"+++Normal & Roughness" = ExtResource("12_ks10v")
+metadata/_custom_type_script = "uid://didai7qq4y6di"
+
+[node name="Cliff" type="Node" parent="MaterialBakerArrays" unique_id=868639903]
+script = ExtResource("8_qt4bu")
+array_index = 2
+category_states_dict = Dictionary[String, ExtResource("9_6u3vb")]({
+"albedo_height": SubResource("Resource_ks12u"),
+"normal_roughness": SubResource("Resource_e07gc")
+})
+category_image_settings = Dictionary[String, ExtResource("7_3sx2u")]({
+"albedo_height": SubResource("Resource_n40yf"),
+"normal_roughness": SubResource("Resource_06pfv")
+})
+image_settings = SubResource("Resource_tq17f")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+generate_at_runtime = true
++albedo = SubResource("NoiseTexture2D_f0ugg")
++tint = Color(0.5609549, 0.5609549, 0.5609549, 1)
++height = SubResource("NoiseTexture2D_c8ljk")
++height_channel = 0
++height_offset = 0.0
+++normal = SubResource("NoiseTexture2D_3sx2u")
+++normal_strength = 1.50000007125
+++roughness = SubResource("NoiseTexture2D_6u3vb")
+++roughness_channel = 0
+++roughness_strength = 1.0
+"+++Albedo & Height" = ExtResource("10_yot2n")
+"+++Normal & Roughness" = ExtResource("12_ks10v")
+metadata/_custom_type_script = "uid://didai7qq4y6di"
+
+[node name="Rock" type="Node" parent="MaterialBakerArrays" unique_id=1229775507]
+script = ExtResource("8_qt4bu")
+array_index = 3
+category_states_dict = Dictionary[String, ExtResource("9_6u3vb")]({
+"albedo_height": SubResource("Resource_gg6mi"),
+"normal_roughness": SubResource("Resource_ikieb")
+})
+category_image_settings = Dictionary[String, ExtResource("7_3sx2u")]({
+"albedo_height": SubResource("Resource_n40yf"),
+"normal_roughness": SubResource("Resource_06pfv")
+})
+image_settings = SubResource("Resource_tq17f")
+category_configs = Array[ExtResource("4_ks12u")]([ExtResource("5_u1p3s"), ExtResource("6_ynu1p")])
+generate_at_runtime = true
++albedo = SubResource("NoiseTexture2D_k2fmj")
++tint = Color(1, 1, 1, 1)
++height = SubResource("NoiseTexture2D_8trqt")
++height_channel = 0
++height_offset = 0.0
+++normal = SubResource("NoiseTexture2D_arc5e")
+++normal_strength = 2.0
+++roughness = SubResource("NoiseTexture2D_4i8gc")
+++roughness_channel = 0
+++roughness_strength = 0.7170000340575
+"+++Albedo & Height" = ExtResource("10_yot2n")
+"+++Normal & Roughness" = ExtResource("12_ks10v")
+metadata/_custom_type_script = "uid://didai7qq4y6di"
+
+[node name="ShaderToPNG" type="Node" parent="." unique_id=1900948269]
+script = ExtResource("19_xiv3c")
+metadata/_custom_type_script = "uid://cw4ljfu2po8hb"
+
+[node name="NOTE about textures" type="Label3D" parent="." unique_id=971046697]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 1, 0.4108876, 0)
+modulate = Color(1, 1, 1, 0.49803922)
+text = "Demo textures are procedural to reduce the asset size.
+Replace with your own or get some from ambientCG."
+font_size = 24
+outline_size = 0

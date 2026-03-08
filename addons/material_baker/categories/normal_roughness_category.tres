@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MaterialBakerCategoryConfig" format=3 uid="uid://drng7m02n6wao"]
+
+[ext_resource type="Shader" uid="uid://ds8s67djac0c2" path="res://addons/material_baker/shaders/normal_roughness_packer.tres" id="1_y0ura"]
+[ext_resource type="Script" uid="uid://b08dx6jlyfris" path="res://addons/material_baker/scripts/material_baker_category_config.gd" id="3_yycub"]
+
+[resource]
+script = ExtResource("3_yycub")
+baker_category_label = "Normal & Roughness"
+default_shader = ExtResource("1_y0ura")
+baker_category_uid = "normal_roughness"

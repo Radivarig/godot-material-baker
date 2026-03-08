@@ -1,0 +1,79 @@
+[gd_resource type="VisualShader" format=3 uid="uid://ds8s67djac0c2"]
+
+[sub_resource type="VisualShaderNodeIntParameter" id="VisualShaderNodeIntParameter_r7v8c"]
+parameter_name = "roughness_channel"
+hint = 1
+max = 3
+
+[sub_resource type="VisualShaderNodeExpression" id="VisualShaderNodeExpression_mavgd"]
+size = Vector2(492, 220)
+expression = "height = texture_sample[channel_index];"
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_2ecpf"]
+operator = 2
+
+[sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_7vij3"]
+parameter_name = "normal"
+texture_type = 2
+
+[sub_resource type="VisualShaderNodeTexture" id="VisualShaderNodeTexture_ugx1v"]
+source = 5
+
+[sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_ugx1v"]
+parameter_name = "roughness"
+
+[sub_resource type="VisualShaderNodeTexture" id="VisualShaderNodeTexture_snbh6"]
+source = 5
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_0mqjf"]
+parameter_name = "normal_strength"
+hint = 1
+max = 2.0
+default_value_enabled = true
+default_value = 1.0
+
+[sub_resource type="VisualShaderNodeMix" id="VisualShaderNodeMix_0mqjf"]
+default_input_values = [0, Vector3(0.5, 0.5, 1), 1, Vector3(1, 1, 1), 2, Vector3(0.5, 0.5, 0.5)]
+op_type = 3
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_m066a"]
+parameter_name = "roughness_strength"
+hint = 1
+max = 2.0
+default_value_enabled = true
+default_value = 1.0
+
+[resource]
+mode = 1
+modes/blend = 4
+flags/skip_vertex_transform = true
+flags/unshaded = true
+flags/light_only = false
+flags/world_vertex_coords = true
+nodes/vertex/0/position = Vector2(520, 200)
+nodes/fragment/0/position = Vector2(3260, -20)
+nodes/fragment/2/node = SubResource("VisualShaderNodeTexture2DParameter_7vij3")
+nodes/fragment/2/position = Vector2(2120, -400)
+nodes/fragment/3/node = SubResource("VisualShaderNodeTexture_ugx1v")
+nodes/fragment/3/position = Vector2(2440, -400)
+nodes/fragment/4/node = SubResource("VisualShaderNodeTexture2DParameter_ugx1v")
+nodes/fragment/4/position = Vector2(1860, 60)
+nodes/fragment/5/node = SubResource("VisualShaderNodeTexture_snbh6")
+nodes/fragment/5/position = Vector2(2180, 60)
+nodes/fragment/6/node = SubResource("VisualShaderNodeFloatParameter_0mqjf")
+nodes/fragment/6/position = Vector2(2440, -160)
+nodes/fragment/8/node = SubResource("VisualShaderNodeMix_0mqjf")
+nodes/fragment/8/position = Vector2(2840, -180)
+nodes/fragment/9/node = SubResource("VisualShaderNodeFloatParameter_m066a")
+nodes/fragment/9/position = Vector2(2660, 420)
+nodes/fragment/12/node = SubResource("VisualShaderNodeIntParameter_r7v8c")
+nodes/fragment/12/position = Vector2(1920, 420)
+nodes/fragment/13/node = SubResource("VisualShaderNodeExpression_mavgd")
+nodes/fragment/13/position = Vector2(2440, 140)
+nodes/fragment/13/size = Vector2(492, 220)
+nodes/fragment/13/input_ports = "0,5,texture_sample;1,1,channel_index;"
+nodes/fragment/13/output_ports = "0,0,height;"
+nodes/fragment/13/expression = "height = texture_sample[channel_index];"
+nodes/fragment/14/node = SubResource("VisualShaderNodeFloatOp_2ecpf")
+nodes/fragment/14/position = Vector2(3020, 100)
+nodes/fragment/connections = PackedInt32Array(2, 0, 3, 2, 4, 0, 5, 2, 6, 0, 8, 2, 3, 0, 8, 1, 8, 0, 0, 0, 12, 0, 13, 1, 5, 0, 13, 0, 14, 0, 0, 1, 9, 0, 14, 1, 13, 0, 14, 0)

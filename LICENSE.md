@@ -1,0 +1,1 @@
+addons/material_baker/LICENSE.md
