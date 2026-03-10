@@ -36,9 +36,12 @@ var _mat_param_path: Dictionary = {} # [ShaderMaterial, [param_name, resource_pa
 var _modified_times: Dictionary = {} # [resource_path, time]
 var _timer: Timer
 
+# cannot use EditorInterface directly as it does not exist in build and breaks
+func getEditorInterface() -> Variant: return Engine.get_singleton(&'EditorInterface')
+
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint(): return
-	Engine.get_singleton(&'EditorInterface').get_resource_filesystem().resources_reimported.connect(_on_resources_reimported)
+	getEditorInterface().get_resource_filesystem().resources_reimported.connect(_on_resources_reimported)
 	_timer = Timer.new()
 	_timer.wait_time = 0.3
 	_timer.timeout.connect(_resource_changed_handler)
@@ -47,9 +50,10 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint(): return
-	Engine.get_singleton(&'EditorInterface').get_resource_filesystem().resources_reimported.disconnect(_on_resources_reimported)
+	getEditorInterface().get_resource_filesystem().resources_reimported.disconnect(_on_resources_reimported)
 
 func _resource_changed_handler() -> void:
+	if getEditorInterface().get_editor_main_screen().get_window().has_focus(): return
 	var changed := _get_changed_resources()
 	if changed.is_empty(): return
 	_reload_changed_textures(changed)

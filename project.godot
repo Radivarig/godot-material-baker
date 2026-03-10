@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="godot-material-baker"
+config/name="material-baker"
 run/main_scene="uid://c252qdagw26vh"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
