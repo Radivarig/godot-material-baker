@@ -41,9 +41,9 @@ func _enter_tree() -> void:
 	Engine.get_singleton(&'EditorInterface').get_resource_filesystem().resources_reimported.connect(_on_resources_reimported)
 	_timer = Timer.new()
 	_timer.wait_time = 0.3
-	_timer.autostart = true
 	_timer.timeout.connect(_resource_changed_handler)
 	add_child(_timer)
+	_timer.start()
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint(): return
