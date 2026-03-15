@@ -9,6 +9,7 @@ var _color_rect: ColorRect
 
 func _ready() -> void:
 	_viewport = SubViewport.new()
+	_viewport.disable_3d = true
 	_viewport.transparent_bg = true
 	add_child(_viewport)
 
