@@ -145,7 +145,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		if not texture_array: continue
 		var label := MaterialBakerCategoryConfig._label(config, i)
 		var saved_res: Texture2DArray = texture2d_arrays_res.get(config.baker_category_uid, null)
-		if not saved_res or saved_res.resource_path.is_empty() or '.tscn::' in saved_res.resource_path:
+		if not saved_res or not _is_external_res(saved_res.resource_path):
 			unsaved.append(label)
 		elif not saved_res.resource_path.ends_with('.res'):
 			unsaved.append(label + ' (must be .res)')

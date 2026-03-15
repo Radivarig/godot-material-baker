@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://60i7sfbgedvf"]
+
+[ext_resource type="Shader" uid="uid://eigsxu7sv736" path="res://addons/material_baker/examples/demo/texture2d_array_preview.gdshader" id="1_gclpg"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_gclpg")
+shader_parameter/height_scale = 0.1

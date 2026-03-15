@@ -4,10 +4,14 @@
 ## Connect this to any method that needs to rebuild geometry, e.g. spawn_quads in Texture2DArrayPreview.
 signal arrays_applied
 
+static func _is_external_res(path: String) -> bool:
+	return path.begins_with('res://') and path.ends_with('.tres') and '::' not in path
+
 @export var material: ShaderMaterial:
 	set(value):
 		material = value
 		_apply_all_arrays()
+		update_configuration_warnings()
 
 @export var arrays_node: MaterialBakerArrays:
 	set(value):
@@ -76,9 +80,11 @@ func _notification(what: int) -> void:
 				value = load(saved_res.resource_path)
 			material.set_shader_parameter(param, value)
 
+		var material_path := material.resource_path # force save to cleanup inlined resources
+		if _is_external_res(material_path): ResourceSaver.save(material, material_path)
+
 	elif what == NOTIFICATION_EDITOR_POST_SAVE:
-		# After saving: restore the live runtime arrays.
-		_apply_all_arrays.call_deferred()
+		_apply_all_arrays.call_deferred() # restore generated references
 
 
 func _all_arrays_ready() -> bool:
@@ -127,3 +133,12 @@ func _apply_all_arrays() -> void:
 		if config and not config.baker_category_uid.is_empty():
 			_apply_for_uid(config.baker_category_uid)
 	if _all_arrays_ready(): arrays_applied.emit()
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = []
+	if material:
+		var material_path := material.resource_path
+		if not _is_external_res(material_path):
+			warnings.append('ShaderMaterial is not saved to disk as an external .tres file.\n\
+			After saving it to disk, also save the scene!')
+	return warnings
