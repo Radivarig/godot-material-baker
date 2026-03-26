@@ -102,6 +102,15 @@ func _get_texture_array(config: MaterialBakerCategoryConfig) -> Texture2DArray:
 		_texture2d_arrays[uid] = saved if saved else Texture2DArray.new()
 	return _texture2d_arrays.get(uid, null)
 
+## Get current texture arrays as Array[Array] pairs of [config, texture_array]
+## This is the same format as the arrays_changed signal.
+func get_current_arrays() -> Array:
+	var result: Array = []
+	for config in category_configs:
+		if config and not config.baker_category_uid.is_empty():
+			result.append([config, _get_texture_array(config)])
+	return result
+
 func _set_texture_array(uid: String, arr: Texture2DArray) -> void:
 	_texture2d_arrays[uid] = arr
 	if arr and _is_external_res(arr.resource_path):
@@ -115,6 +124,22 @@ func _sync_texture2d_arrays() -> void:
 			# Populate cache entry if not already there
 			if not _texture2d_arrays.has(config.baker_category_uid):
 				_get_texture_array(config) # triggers load-or-create via getter
+
+			# Mark categories with saved arrays as ready
+			var uid := config.baker_category_uid
+			var saved := texture2d_arrays_res.get(uid, null)
+			if saved and _is_external_res(saved.resource_path):
+				_initial_arrays_ready[uid] = true
+
+	# Check if all categories are ready after sync
+	var all_ready := true
+	for cfg in category_configs:
+		if not _initial_arrays_ready.get(cfg.baker_category_uid, false):
+			all_ready = false
+			break
+
+	if all_ready:
+		_suppress_arrays_changed_until_ready = false
 
 func _exit_tree() -> void:
 	_cancel_save_timer()
@@ -168,8 +193,16 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 var _suppress_baker_rendered := false
-func baker_rendered(baker: MaterialBaker, config: MaterialBakerCategoryConfig) -> void:
+
+var _initial_arrays_ready: Dictionary[String, bool] = {}
+var _suppress_arrays_changed_until_ready := true
+
+func baker_rendered(baker: MaterialBaker, configs: Array[MaterialBakerCategoryConfig]) -> void:
 	if _suppress_baker_rendered: return
+	for config in configs:
+		_handle_baker_config_rendered(baker, config)
+
+func _handle_baker_config_rendered(baker: MaterialBaker, config: MaterialBakerCategoryConfig) -> void:
 	var uid := config.baker_category_uid
 	if not uid.is_empty() and not _texture2d_arrays.has(uid):
 		_get_texture_array(config) # triggers load-or-create
@@ -233,7 +266,28 @@ func _update_array_layer(baker: MaterialBaker, config: MaterialBakerCategoryConf
 
 	texture_array.update_layer(category_state.image, baker.array_index)
 	texture_array.emit_changed()
-	_emit_arrays_changed_deferred([config])
+
+	# Mark this category as having initial data
+	var uid := config.baker_category_uid
+	if not _initial_arrays_ready.has(uid):
+		# Check if this array now has all layers filled
+		if texture_array.get_layers() >= connected_bakers.size():
+			_initial_arrays_ready[uid] = true
+
+	# Check if all categories are now ready
+	var all_ready := true
+	for cfg in category_configs:
+		if not _initial_arrays_ready.get(cfg.baker_category_uid, false):
+			all_ready = false
+			break
+
+	if all_ready:
+		_suppress_arrays_changed_until_ready = false
+
+	# Only emit arrays_changed after initial generation is complete
+	if not _suppress_arrays_changed_until_ready:
+		_emit_arrays_changed_deferred([config])
+
 	update_configuration_warnings()
 
 	debounce_save_arrays()
@@ -280,8 +334,24 @@ func _regenerate_arrays(configs: Array[MaterialBakerCategoryConfig] = []) -> voi
 			texture_array.emit_changed()
 			changed_configs.append(config)
 
+			# Mark this category as having initial data
+			if texture_array.get_layers() >= connected_bakers.size():
+				_initial_arrays_ready[uid] = true
+
 	if not changed_configs.is_empty():
-		_emit_arrays_changed_deferred(changed_configs)
+		# Check if all categories are now ready
+		var all_ready := true
+		for cfg in category_configs:
+			if not _initial_arrays_ready.get(cfg.baker_category_uid, false):
+				all_ready = false
+				break
+
+		if all_ready:
+			_suppress_arrays_changed_until_ready = false
+
+		# Only emit arrays_changed after initial generation is complete
+		if not _suppress_arrays_changed_until_ready:
+			_emit_arrays_changed_deferred(changed_configs)
 	if not images_by_uid.is_empty():
 		debounce_save_arrays()
 	update_configuration_warnings()

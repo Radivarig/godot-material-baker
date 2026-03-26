@@ -1,6 +1,6 @@
 @tool class_name MaterialBaker extends ResourceWatcher
 
-signal baker_rendered(baker: MaterialBaker, config: MaterialBakerCategoryConfig)
+signal baker_rendered(baker: MaterialBaker, category_configs: Array[MaterialBakerCategoryConfig])
 
 ## Depends on the implementation of the manager script.[br]
 ## E.g. Terrain3D example uses it to define which texture list asset to modify.
@@ -82,7 +82,14 @@ func _on_baker_image_settings_changed() -> void:
 	set(value):
 		_disconnect_baker_signals()
 		var old_uids := category_configs.map(func(c: MaterialBakerCategoryConfig) -> String: return c.baker_category_uid)
-		category_configs = value
+		var temp_array: Array[MaterialBakerCategoryConfig] = []
+		if value:
+			temp_array.assign(value)
+		category_configs = temp_array
+		# Ensure no null configs in the array, create new ones if needed
+		for i in range(category_configs.size()):
+			if not category_configs[i]:
+				category_configs[i] = MaterialBakerCategoryConfig.new()
 		_shader_param_cache.clear()
 		_sync_category_states()
 		_sync_category_bakers()
@@ -122,6 +129,12 @@ static func prop_strip_prefix(s: String) -> String:
 
 var scene_loaded := false
 @export_storage var generate_at_runtime: bool = false
+
+var _initial_render_complete: Dictionary[String, bool] = {}
+var _suppress_signals_until_initial_complete := true
+
+var _pending_baker_rendered: Dictionary[String, MaterialBakerCategoryConfig] = {}
+var _baker_rendered_pending := false
 
 func _ready() -> void:
 	_make_states_unique()
@@ -471,8 +484,55 @@ func render_category_bakers(configs: Array[MaterialBakerCategoryConfig] = []) ->
 		_apply_image_settings(image, config)
 		category_state.image = image
 		category_state.compressed_image = null
-		# print('[MaterialBaker] rendered baker=%s config=%s' % [name, config.baker_category_uid])
-		baker_rendered.emit(self, config)
+
+		# Track initial completion
+		var uid := config.baker_category_uid
+		if not _initial_render_complete.has(uid):
+			_initial_render_complete[uid] = true
+
+		# Check if all categories are now complete
+		var all_complete := true
+		for cfg in category_configs:
+			if not _initial_render_complete.get(cfg.baker_category_uid, false):
+				all_complete = false
+				break
+
+		var was_suppressed := _suppress_signals_until_initial_complete
+		if all_complete and _suppress_signals_until_initial_complete:
+			_suppress_signals_until_initial_complete = false
+
+		# Always add current config to pending batch
+		_emit_baker_rendered_deferred(config)
+
+		# If we just lifted suppression and have pending configs, schedule immediate emission
+		if was_suppressed and not _suppress_signals_until_initial_complete and not _pending_baker_rendered.is_empty():
+			_baker_rendered_pending = false  # Reset so the next deferred call will execute
+			# Use await to delay one frame and ensure we're after the deferred queue
+			await get_tree().process_frame
+			_emit_baker_rendered()
+
+func _emit_baker_rendered_deferred(config: MaterialBakerCategoryConfig) -> void:
+	_pending_baker_rendered[config.baker_category_uid] = config
+	if _baker_rendered_pending: return
+	_baker_rendered_pending = true
+	call_deferred(&"_emit_baker_rendered")
+
+func _emit_baker_rendered() -> void:
+	if _pending_baker_rendered.is_empty():
+		_baker_rendered_pending = false
+		return
+
+	# Only emit if initial render is complete
+	if _suppress_signals_until_initial_complete:
+		# Don't reset _baker_rendered_pending - keep it true so we don't schedule another deferred call
+		# Don't clear _pending_baker_rendered - accumulate until suppression lifts
+		return
+
+	var configs: Array[MaterialBakerCategoryConfig] = []
+	configs.assign(_pending_baker_rendered.values())
+	_pending_baker_rendered.clear()
+	_baker_rendered_pending = false
+	baker_rendered.emit(self, configs)
 
 var _throttle_active: Dictionary = {}
 var _throttle_trailing: Dictionary = {}
@@ -481,6 +541,11 @@ func _throttle_render_category_baker(config: MaterialBakerCategoryConfig) -> voi
 	_throttle_render(config)
 
 func _throttle_render(config: MaterialBakerCategoryConfig = null) -> void:
+	# Reset initial completion tracking when doing full render to re-batch all renders
+	if not config:
+		_initial_render_complete.clear()
+		_suppress_signals_until_initial_complete = true
+
 	var filter: Array[MaterialBakerCategoryConfig] = []
 	if config: filter.append(config)
 	if config:

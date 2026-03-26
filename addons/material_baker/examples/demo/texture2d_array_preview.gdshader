@@ -17,7 +17,7 @@ void vertex() {
 void fragment() {
 	vec4 albedo_height = texture(albedo_height_array, vec3(UV, float(array_index)));
 	vec4 normal_roughness = texture(normal_roughness_array, vec3(UV, float(array_index)));
-	
+
 	ALBEDO = albedo_height.rgb;
 	NORMAL_MAP = normal_roughness.rgb;
 	ROUGHNESS = normal_roughness.a;

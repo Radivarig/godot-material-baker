@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" format=3 uid="uid://60i7sfbgedvf"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://b8j6t8eqs6x4a"]
 
 [ext_resource type="Shader" uid="uid://eigsxu7sv736" path="res://addons/material_baker/examples/demo/texture2d_array_preview.gdshader" id="1_gclpg"]
 

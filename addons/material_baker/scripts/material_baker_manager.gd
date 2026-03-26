@@ -1,7 +1,7 @@
 @tool class_name MaterialBakerManager extends Node
 
 ## Override in subclass
-func baker_rendered(_baker: MaterialBaker, _config: MaterialBakerCategoryConfig) -> void: pass
+func baker_rendered(_baker: MaterialBaker, _configs: Array[MaterialBakerCategoryConfig]) -> void: pass
 func bakers_structure_changed() -> void: pass # on add/remove/reorder of bakers
 func regenerate() -> void: pass
 func category_configs_changed() -> void: pass # called after category_configs is assigned

@@ -19,8 +19,10 @@ func _ready() -> void:
 		if terrain3d_nodes.is_empty(): push_error('No Terrain3D node found in the scene.')
 		else: terrain3d = terrain3d_nodes[0]
 
-func baker_rendered(baker: MaterialBaker, c: MaterialBakerCategoryConfig = null) -> void:
-	update_terrain3d_textures(baker, c)
+func baker_rendered(baker: MaterialBaker, configs: Array[MaterialBakerCategoryConfig]) -> void:
+	if not configs: return regenerate()
+	for config in configs:
+		update_terrain3d_textures(baker, config)
 
 func regenerate() -> void:
 	for baker in connected_bakers:
@@ -40,7 +42,7 @@ func update_terrain3d_textures(baker: MaterialBaker, c: MaterialBakerCategoryCon
 		if not category_state or not category_state.image: continue
 
 		match config.baker_category_uid:
-			albedo_height_category.baker_category_uid: 
+			albedo_height_category.baker_category_uid:
 				terrain_texture.albedo_texture = ImageTexture.create_from_image(category_state.image)
-			normal_roughness_category.baker_category_uid: 
+			normal_roughness_category.baker_category_uid:
 				terrain_texture.normal_texture = ImageTexture.create_from_image(category_state.image)

@@ -16,10 +16,10 @@ Generated arrays are synced to a shader, and pre/post-save hooks prevent in-memo
 
 ## How to Use
 
-1. Copy `material-baker` into your `res://addons/`, enable under `Project > Project Settings > Plugins`.
+1. Copy `material_baker` into your `res://addons/`, enable under `Project > Project Settings > Plugins`.
 2. Add a **MaterialBakerArrays** node to the scene, load configs from `addons/material_baker/categories`, otherwise give them a unique `baker_category_uid`.
 3. Use the **Create Material Baker** button to add and auto-configure category configs and image settings, or duplicate existing baker nodes.
-4. Save arrays to `.res` files and assign them as references to your shaders or use `RuntimeShaderArrays` to auto generate and sync arrays to the shader at runtime.
+4. Save arrays to `.res` files and assign them as references to your shaders or use `RuntimeShaderMapper` to auto generate and sync arrays or textures to the shader at runtime.
 5. Upon editing, the arrays are decompressed for performance, press **Compress** when done editing to reduce the `.res` file size.
 
 Each `MaterialBaker` shows the shader parameters for every category directly in the Inspector.
@@ -80,7 +80,7 @@ Mesh preview to inspect individual layers of the generated `Texture2DArray`s.
 | Core | |
 |---|---|
 | `MaterialBakerArrays`<br>extends&nbsp;MaterialBakerManager | Collects baked images from all bakers into one `Texture2DArray` per category. <br>Has a `↓ Compress` button to apply the configured compression format when ready. |
-| `RuntimeShaderArrays`<br>extends&nbsp;Node | Bridges a `MaterialBakerArrays` node to a `ShaderMaterial` at runtime. <br>Maps each `baker_category_uid` to a configurable shader parameter name. <br>Tracks when arrays are ready and updates the material parameters automatically. <br>On editor save, temporarily swaps live arrays for their saved `.res` counterparts to avoid serializing them into the scene file.|
+| `RuntimeShaderMapper`<br>extends&nbsp;Node | Bridges a `MaterialBakerArrays` or `MaterialBaker` node to a `ShaderMaterial` at runtime. <br>Maps each `baker_category_uid` to a configurable shader parameter name. <br>Applies `Texture2DArray` outputs from `MaterialBakerArrays` or single `ImageTexture` outputs from `MaterialBaker`. <br>On editor save, temporarily clears live parameters to avoid serializing in-memory resources into the scene file.|
 | `MaterialBakerManager`<br>extends&nbsp;Node | Owns `category_configs` and `image_settings`, propagates them to `MaterialBaker` nodes. <br> Has a `+ Create Material Baker` button that adds a new baker with all the configs preconfigured. <br>Override: `baker_rendered`, `bakers_structure_changed`, and `regenerate`. |
 | `MaterialBaker`<br>extends&nbsp;ResourceWatcher | Exposes all shader parameters for each category directly in the Inspector. <br>Re-bakes automatically when resources change, and emits `baker_rendered`. <br> Uses `texture_hot_reload` to swap external texture changes while Godot is not focused.|
 | `MaterialBakerCategory`<br>extends&nbsp;Node | Internal renderer per category. Owns a `SubViewport + ColorRect`. <br> Uses the category's shader, triggers a single-frame render, and returns the `Image` result. |
@@ -101,12 +101,11 @@ Mesh preview to inspect individual layers of the generated `Texture2DArray`s.
 
 - Arrays that are not saved to `.res` files are auto generated upon entering the scene play.
 - This allows a game to ship with raw base textures and generate the rest asynchronously on the fly.
-- Use `RuntimeShaderArrays` to auto sync arrays to shader parameters and have it prevent Godot from serializing references to scene.
+- Use `RuntimeShaderMapper` to auto sync arrays or textures to shader parameters and have it prevent Godot from serializing in-memory resources into the scene.
 - Uncheck `generate_at_runtime` to disable and to also show warnings when `.res` file array references are missing.
 
 ## TODO
 
-- Add `RuntimeShaderTextures`, like arrays with a single layer, a PBR example that syncs to a shader and can save categories to `.res`.
 - Add more image processing examples, like auto generating a normalmap from a heightmap, or roughness from albedo
 - Add example for caching runtime-generated arrays to .res files in build, e.g. ship without, generate once then reuse.
 

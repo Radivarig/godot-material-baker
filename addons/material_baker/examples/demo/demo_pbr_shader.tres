@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://7mrx4l7l43hs"]
+
+[ext_resource type="Shader" uid="uid://dl4nyu6jka3i7" path="res://addons/material_baker/examples/demo/pbr_shader_preview.gdshader" id="1_wdk0d"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_wdk0d")
+shader_parameter/height_scale = 0.1
