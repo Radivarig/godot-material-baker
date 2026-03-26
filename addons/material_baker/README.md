@@ -67,7 +67,7 @@ Compression will persist if you save the arrays to a `.res` file, otherwise comp
 ### Texture2DArrays Preview
 
 Mesh preview to inspect individual layers of the generated `Texture2DArray`s.  
-> NOTE: In the demo scene the preview script has a signal connected to `arrays_node.arrays_applied` that recreates the mesh when the arrays layer count changes.
+> NOTE: In the demo scene the preview script has a signal connected to `RuntimeShaderMapper.mapping_applied` that recreates the mesh when the arrays layer count changes.
 
 ### Terrain3D (WIP)
 
