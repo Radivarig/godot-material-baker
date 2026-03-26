@@ -88,7 +88,7 @@ func _check_for_changes() -> void:
 	if get_current_focus(): return
 	var changed := _get_changed_resources()
 	if changed.is_empty(): return
-	_reload_changed_textures(changed)
+	_trigger_reimport(changed)
 
 func _check_and_reimport_if_needed() -> void:
 	await get_tree().create_timer(0.5).timeout
@@ -96,8 +96,8 @@ func _check_and_reimport_if_needed() -> void:
 
 	print('[TextureHotReloader] Godot did not reimport ', _hotswapped_resources.size(), ' resources, forcing reimport')
 	var filesystem: Variant = getEditorInterface().get_resource_filesystem()
-	for resource_path in _hotswapped_resources.keys():
-		filesystem.reimport_files(PackedStringArray([resource_path]))
+	var files_to_reimport := PackedStringArray(_hotswapped_resources.keys())
+	filesystem.reimport_files(files_to_reimport)
 
 func _on_resources_reimported(resources: PackedStringArray) -> void:
 	var affected_materials: Array[ShaderMaterial] = []
@@ -141,6 +141,14 @@ func _get_changed_resources() -> Array[String]:
 				_update_modified_time(resource_path)
 				changed.append(resource_path)
 	return changed
+
+func _trigger_reimport(changed_resources: Array[String]) -> void:
+	for resource_path in changed_resources:
+		_hotswapped_resources[resource_path] = true
+	
+	var filesystem: Variant = getEditorInterface().get_resource_filesystem()
+	var files_to_reimport := PackedStringArray(changed_resources)
+	filesystem.reimport_files(files_to_reimport)
 
 func _reload_changed_textures(changed_resources: Array[String]) -> void:
 	for resource_path in changed_resources:
